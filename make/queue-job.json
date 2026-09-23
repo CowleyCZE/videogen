@@ -1,0 +1,7 @@
+{
+  "job_id": "{{release_id}}",
+  "release_id": "{{release_id}}",
+  "source": "{{source_filename}}",
+  "source_url": "{{temporary_download_url}}",
+  "release_plan": {{release_plan_json}}
+}

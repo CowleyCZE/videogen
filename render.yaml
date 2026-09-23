@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: stork-command-queue
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --chdir queue_service app:app
+    envVars:
+      - key: QUEUE_TOKEN
+        sync: false
+      - key: QUEUE_DB
+        value: /var/data/queue.sqlite3
+    disk:
+      name: stork-queue-data
+      mountPath: /var/data
+      sizeGB: 1

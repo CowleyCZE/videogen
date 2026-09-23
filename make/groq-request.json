@@ -1,0 +1,12 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "temperature": 0.2,
+  "messages": [
+    {"role": "system", "content": "{{STORK_COMMAND_PROMPT}}"},
+    {"role": "user", "content": "song={{song}}\nrelease_day={{release_day}}\nspotify_url={{spotify_url}}\nvideo_metadata={{metadata_json}}\ntimestamped_transcript={{transcript}}"}
+  ],
+  "response_format": {
+    "type": "json_schema",
+    "json_schema": {"name": "release_plan", "strict": true, "schema": "{{RELEASE_PLAN_SCHEMA}}"}
+  }
+}
