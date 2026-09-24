@@ -19,26 +19,30 @@ def enqueue():
     if not auth(): return jsonify(error="unauthorized"), 401
     data = request.get_json(force=True)
     
-    # VALIDACE: Zajištění správného formátu od Make
     if not data.get("release_plan"):
         return jsonify(error="missing_release_plan"), 400
     if not data.get("source") and not data.get("source_url"):
          return jsonify(error="missing_source"), 400
          
     job_id = data.get("job_id") or secrets.token_hex(12)
-    # Pro jistotu vložíme job_id i do vnitřního payloadu
     data["job_id"] = job_id 
     
     c = db()
-    c.execute("INSERT OR IGNORE INTO jobs VALUES (?, 'queued', ?, NULL, NULL)", (job_id, json.dumps(data)))
+    # Při opětovném zaslání stejného job_id z Make (např. při opravě) úlohu resetujeme do fronty
+    c.execute("""
+        INSERT INTO jobs (job_id, status, payload, result, error) 
+        VALUES (?, 'queued', ?, NULL, NULL)
+        ON CONFLICT(job_id) DO UPDATE SET 
+        status='queued', payload=excluded.payload, result=NULL, error=NULL
+    """, (job_id, json.dumps(data)))
     c.commit()
+    
     return jsonify(job_id=job_id, status="queued"), 202
 
 @app.post("/v1/jobs/claim")
 def claim():
     if not auth(): return jsonify(error="unauthorized"), 401
     c = db()
-    # Můžeme přidat filtraci pro konkrétní typy úloh, pokud je workerů více
     row = c.execute("SELECT * FROM jobs WHERE status='queued' ORDER BY rowid LIMIT 1").fetchone()
     if not row: return "", 204
     

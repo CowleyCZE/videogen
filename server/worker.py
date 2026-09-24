@@ -29,15 +29,12 @@ def download_source(job: dict, path: Path):
     if job.get("source_url"):
         logging.info(f"Stahuji zdrojový soubor z URL: {job['source_url']}")
         
-        # Pokud jde o Google Drive odkaz, použijeme gdown pro spolehlivé stažení
         if "drive.google.com" in job["source_url"]:
             output_str = str(path)
-            # gdown zvládne jak přímé ID, tak sdílecí URL a obchází potvrzovací mezikroky
-            res = gdown.download(url=job["source_url"], output=output_str, fuzzy=True, quiet=False)
+            res = gdown.download(url=job["source_url"], output=output_str, quiet=False)
             if res is None or not path.exists() or path.stat().st_size == 0:
                 raise RuntimeError(f"Stažení z Google Drive selhalo nebo stáhlo prázdný soubor.")
         else:
-            # Klasické stahování pro běžné přímé URL odkazující na soubory
             session = requests.Session()
             with session.get(job["source_url"], stream=True, timeout=300) as r:
                 r.raise_for_status()
