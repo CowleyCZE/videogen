@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from video_analyzer import analyze_video
 from video_processor import render_plan
 
-# Nastavení logování
 logging.basicConfig(
     level=logging.INFO, 
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -14,20 +13,36 @@ logging.basicConfig(
 )
 
 load_dotenv()
-ROOT = Path(os.getenv("STORK_ROOT", ".")).resolve()
+
+raw_root = os.getenv("STORK_ROOT", ".")
+ROOT = Path(raw_root).expanduser().resolve()
+
 QUEUE = os.environ["QUEUE_BASE_URL"].rstrip("/")
 TOKEN = os.environ["QUEUE_TOKEN"]
 POLL = int(os.getenv("POLL_SECONDS", "15"))
 
-def headers(): return {"Authorization": f"Bearer {TOKEN}"}
+def headers(): 
+    return {"Authorization": f"Bearer {TOKEN}"}
 
 def download_source(job: dict, path: Path):
     if job.get("source_url"):
         logging.info(f"Stahuji zdrojový soubor z URL: {job['source_url']}")
-        with requests.get(job["source_url"], stream=True, timeout=300) as r:
-            r.raise_for_status()
-            with path.open("wb") as f:
-                for chunk in r.iter_content(1024 * 1024): f.write(chunk)
+        session = requests.Session()
+        r = session.get(job["source_url"], stream=True, timeout=300)
+        
+        confirm_token = None
+        for key, val in r.cookies.items():
+            if key.startswith("download_warning"):
+                confirm_token = val
+                break
+        if confirm_token:
+            r = session.get(f"{job['source_url']}&confirm={confirm_token}", stream=True, timeout=300)
+
+        r.raise_for_status()
+        with path.open("wb") as f:
+            for chunk in r.iter_content(1024 * 1024):
+                if chunk:
+                    f.write(chunk)
     else:
         local = ROOT / "input" / job["source"]
         logging.warning(f"URL nenalezeno. Hledám lokální soubor: {local}")
@@ -44,8 +59,7 @@ def run_once():
     job = r.json()
     job_id = job.get("job_id", "unknown")
     
-    # Validace typu úlohy
-    if job.get("type") != "video_processing":
+    if job.get("type") and job.get("type") != "video_processing":
         logging.warning(f"Ignoruji úlohu {job_id}: nesprávný typ '{job.get('type')}'.")
         requests.post(f"{QUEUE}/v1/jobs/{job_id}/fail", json={"error": f"Nepodporovaný typ úlohy: {job.get('type')}"}, headers=headers(), timeout=30)
         return True
@@ -62,11 +76,11 @@ def run_once():
         logging.info(f"Analyzuji video: {source.name}")
         meta = analyze_video(source, work / "analysis")
         
-        logging.info(f"Ukládám plán vydání...")
+        logging.info("Ukládám plán vydání...")
         plan_path = work / "release_plan.json"
         plan_path.write_text(json.dumps(job["release_plan"], ensure_ascii=False, indent=2), encoding="utf-8")
         
-        logging.info(f"Spouštím renderování klipů...")
+        logging.info("Spouštím renderování klipů...")
         files = render_plan(source, job["release_plan"], work)
         
         payload = {"job_id": job_id, "status": "completed", "metadata": meta, "files": files}
