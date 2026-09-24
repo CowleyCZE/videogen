@@ -3,3 +3,4 @@ python-dotenv>=1.0,<2
 requests>=2.31,<3
 jsonschema>=4.22,<5
 gunicorn>=22,<24
+gdown>=6.4.0

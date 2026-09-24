@@ -2,6 +2,7 @@ from __future__ import annotations
 import json, os, shutil, time, traceback, logging
 from pathlib import Path
 import requests
+import gdown
 from dotenv import load_dotenv
 from video_analyzer import analyze_video
 from video_processor import render_plan
@@ -27,22 +28,23 @@ def headers():
 def download_source(job: dict, path: Path):
     if job.get("source_url"):
         logging.info(f"Stahuji zdrojový soubor z URL: {job['source_url']}")
-        session = requests.Session()
-        r = session.get(job["source_url"], stream=True, timeout=300)
         
-        confirm_token = None
-        for key, val in r.cookies.items():
-            if key.startswith("download_warning"):
-                confirm_token = val
-                break
-        if confirm_token:
-            r = session.get(f"{job['source_url']}&confirm={confirm_token}", stream=True, timeout=300)
-
-        r.raise_for_status()
-        with path.open("wb") as f:
-            for chunk in r.iter_content(1024 * 1024):
-                if chunk:
-                    f.write(chunk)
+        # Pokud jde o Google Drive odkaz, použijeme gdown pro spolehlivé stažení
+        if "drive.google.com" in job["source_url"]:
+            output_str = str(path)
+            # gdown zvládne jak přímé ID, tak sdílecí URL a obchází potvrzovací mezikroky
+            res = gdown.download(url=job["source_url"], output=output_str, fuzzy=True, quiet=False)
+            if res is None or not path.exists() or path.stat().st_size == 0:
+                raise RuntimeError(f"Stažení z Google Drive selhalo nebo stáhlo prázdný soubor.")
+        else:
+            # Klasické stahování pro běžné přímé URL odkazující na soubory
+            session = requests.Session()
+            with session.get(job["source_url"], stream=True, timeout=300) as r:
+                r.raise_for_status()
+                with path.open("wb") as f:
+                    for chunk in r.iter_content(1024 * 1024):
+                        if chunk:
+                            f.write(chunk)
     else:
         local = ROOT / "input" / job["source"]
         logging.warning(f"URL nenalezeno. Hledám lokální soubor: {local}")
