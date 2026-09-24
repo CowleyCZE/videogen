@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+DATA/
+input/
+output/
+home/
+jobs/
+logs/
+archive/
