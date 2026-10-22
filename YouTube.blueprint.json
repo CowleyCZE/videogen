@@ -1,0 +1,1474 @@
+{
+    "name": "YouTube",
+    "flow": [
+        {
+            "id": 1,
+            "module": "google-drive:watchFilesInAFolder",
+            "version": 4,
+            "parameters": {
+                "limit": 1,
+                "select": "create",
+                "folderId": "/1c3SgkNe5MZJg_TYbvXDqWuv6YLMiCAOD/1IwQaqU4ZqJoK0g_Bo8fEpjb2C2fY9IlR",
+                "mimeType": "all",
+                "__IMTCONN__": 14618454,
+                "destination": "drive"
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "id": 4,
+            "module": "google-drive:searchForFilesFolders",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 14618454
+            },
+            "mapper": {
+                "limit": "1",
+                "query": "{{replace(1.name; \".mp4\"; \".json\")}}",
+                "select": "list",
+                "folderId": "/1c3SgkNe5MZJg_TYbvXDqWuv6YLMiCAOD/1IwQaqU4ZqJoK0g_Bo8fEpjb2C2fY9IlR",
+                "operator": "=",
+                "retrieve": "file",
+                "searchType": "title",
+                "destination": "drive",
+                "searchScope": "limit"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "22c9abc9589f0708"
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "Select from the list"
+                        },
+                        "folderId": {
+                            "mode": "chose",
+                            "path": [
+                                "1c3SgkNe5MZJg_TYbvXDqWuv6YLMiCAOD",
+                                "1IwQaqU4ZqJoK0g_Bo8fEpjb2C2fY9IlR"
+                            ]
+                        },
+                        "operator": {
+                            "label": "Search for exact term"
+                        },
+                        "retrieve": {
+                            "label": "Files"
+                        },
+                        "searchType": {
+                            "label": "Search within file/folder names"
+                        },
+                        "destination": {
+                            "label": "My Drive"
+                        },
+                        "searchScope": {
+                            "label": "Limit to the chosen folder"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-drive"
+                            },
+                            "label": "Jakub's Google Drive connection (cowleyy@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-restricted,google-drive",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Select the Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "map",
+                                "list"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "retrieve",
+                        "type": "select",
+                        "label": "Retrieve",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "file",
+                                "folder",
+                                "file_folder"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "searchType",
+                        "type": "select",
+                        "label": "Search",
+                        "validate": {
+                            "enum": [
+                                "title",
+                                "fulltext",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    },
+                    {
+                        "name": "destination",
+                        "type": "select",
+                        "label": "Choose a Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "searchScope",
+                        "type": "select",
+                        "label": "Search Scope",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "everywhere",
+                                "limit"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folderId",
+                        "type": "folder",
+                        "label": "Choose a Folder"
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    },
+                    {
+                        "name": "operator",
+                        "type": "select",
+                        "label": "Search options",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "=",
+                                "contains"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "module": "google-drive:getAFile",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 14618454
+            },
+            "mapper": {
+                "file": "{{4.id}}",
+                "select": "map",
+                "formatDrawings": "image/jpeg",
+                "formatDocuments": "text/plain",
+                "formatSpreadsheets": "text/csv",
+                "formatPresentations": "application/pdf"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "id": 5,
+            "module": "util:SetVariable2",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "name": "transcript_text",
+                "scope": "roundtrip",
+                "value": "{{toString(2.data)}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 900,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "id": 6,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "tlsType": "",
+                "authenticationType": "noAuth"
+            },
+            "mapper": {
+                "url": "https://api.groq.com/openai/v1/chat/completions",
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "Authorization",
+                        "value": "Bearer YOUR_GROQ_API_KEY_HERE"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "timeout": "300",
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "shareCookies": false,
+                "parseResponse": true,
+                "allowRedirects": true,
+                "stopOnHttpError": true,
+                "jsonStringBodyContent": "{\n  \"model\": \"openai/gpt-oss-20b\",\n  \"temperature\": 0.0,\n  \"max_tokens\": 2048,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Jsi STORK COMMAND. Odpovídej VÝHRADNĚ jako čistý validní JSON bez jakéhokoliv dalšího textu, vysvětlování nebo Markdown značek (nepoužívej ```json). Všechny textové hodnoty piš česky. Struktura JSON musí přesně odpovídat tomuto vzoru: {\\\"schema_version\\\": \\\"1.0\\\", \\\"release_id\\\": \\\"MOSTY_MEZI_NAMI_001\\\", \\\"song\\\": \\\"Mosty mezi nami\\\", \\\"strategy\\\": \\\"waterfall\\\", \\\"release_day\\\": \\\"2026-10-02\\\", \\\"spotify_url\\\": [\\\"[https://open.spotify.com/artist/3dFUhelmNR3kaxu0S54ZMu](https://open.spotify.com/artist/3dFUhelmNR3kaxu0S54ZMu)\\\"], \\\"clips\\\": [{\\\"id\\\": \\\"clip_1\\\", \\\"start\\\": 10, \\\"end\\\": 40, \\\"platforms\\\": [\\\"TikTok\\\"], \\\"purpose\\\": \\\"hook\\\", \\\"format\\\": \\\"9:16\\\", \\\"resolution\\\": \\\"1080x1920\\\", \\\"hook\\\": \\\"...\\\"}], \\\"posts\\\": [{\\\"id\\\": \\\"post_1\\\", \\\"platform\\\": \\\"TikTok\\\", \\\"type\\\": \\\"video\\\", \\\"publish_at\\\": \\\"2026-10-02T12:00:00Z\\\", \\\"clip_id\\\": [\\\"clip_1\\\"], \\\"caption\\\": \\\"...\\\", \\\"cta\\\": \\\"...\\\", \\\"hashtags\\\": [\\\"#music\\\"], \\\"title\\\": [\\\"Mosty mezi nami\\\"], \\\"tiktok_mode\\\": [\\\"draft\\\"]}]}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Vytvoř release plan ve formátu JSON pro tuto skladbu:\\nNázev skladby: Mosty mezi nami\\nDatum vydání: 2026-10-02\\nSpotify URL: [https://open.spotify.com/artist/3dFUhelmNR3kaxu0S54ZMu](https://open.spotify.com/artist/3dFUhelmNR3kaxu0S54ZMu)\\nTranskripce s časovými značkami:\\n{{escapeJSON(5.transcript_text)}}\"\n    }\n  ]\n}",
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1200,
+                    "y": 0
+                },
+                "restore": {
+                    "expect": {
+                        "method": {
+                            "mode": "chose",
+                            "label": "POST"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null,
+                                null
+                            ]
+                        },
+                        "contentType": {
+                            "label": "application/jsonEnter data in the JSON format, as a string or using a data structure."
+                        },
+                        "inputMethod": {
+                            "label": "JSON stringEnter the JSON body as a raw text string. If values contain JSON reserved characters, you must escape them manually."
+                        },
+                        "shareCookies": {
+                            "mode": "chose"
+                        },
+                        "parseResponse": {
+                            "mode": "chose"
+                        },
+                        "allowRedirects": {
+                            "mode": "chose"
+                        },
+                        "paginationType": {
+                            "label": "Empty"
+                        },
+                        "queryParameters": {
+                            "mode": "chose"
+                        },
+                        "stopOnHttpError": {
+                            "mode": "chose"
+                        },
+                        "requestCompressedContent": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "tlsType": {
+                            "label": "Empty"
+                        },
+                        "authenticationType": {
+                            "label": "No authenticationUse when no credentials are required for the request."
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "authenticationType",
+                        "type": "select",
+                        "label": "Authentication type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "noAuth",
+                                "apiKey",
+                                "basicAuth",
+                                "oAuth"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tlsType",
+                        "type": "select",
+                        "label": "Transport layer security (TLS)",
+                        "validate": {
+                            "enum": [
+                                "mTls",
+                                "tls"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "proxyKeychain",
+                        "type": "keychain:proxy",
+                        "label": "Proxy"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "url",
+                        "type": "url",
+                        "label": "URL",
+                        "required": true
+                    },
+                    {
+                        "name": "method",
+                        "type": "select",
+                        "label": "Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "get",
+                                "head",
+                                "post",
+                                "put",
+                                "patch",
+                                "delete",
+                                "options"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "headers",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name",
+                                    "required": true,
+                                    "validate": {
+                                        "pattern": "^[-!#$%&'*+.^_`|~0-9A-Za-z]+$"
+                                    }
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Header"
+                        },
+                        "type": "array",
+                        "label": "Headers"
+                    },
+                    {
+                        "name": "queryParameters",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Parameter"
+                        },
+                        "type": "array",
+                        "label": "Query parameters"
+                    },
+                    {
+                        "name": "contentType",
+                        "type": "select",
+                        "label": "Body content type",
+                        "validate": {
+                            "enum": [
+                                "json",
+                                "multipart",
+                                "urlEncoded",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "parseResponse",
+                        "type": "boolean",
+                        "label": "Parse response",
+                        "required": true
+                    },
+                    {
+                        "name": "stopOnHttpError",
+                        "type": "boolean",
+                        "label": "Return error if HTTP request fails",
+                        "required": true
+                    },
+                    {
+                        "name": "timeout",
+                        "type": "uinteger",
+                        "label": "Timeout",
+                        "validate": {
+                            "max": 300,
+                            "min": 1
+                        }
+                    },
+                    {
+                        "name": "allowRedirects",
+                        "type": "boolean",
+                        "label": "Allow redirects",
+                        "required": true
+                    },
+                    {
+                        "name": "shareCookies",
+                        "type": "boolean",
+                        "label": "Share cookies with other HTTP modules",
+                        "required": true
+                    },
+                    {
+                        "name": "requestCompressedContent",
+                        "type": "boolean",
+                        "label": "Request compressed content",
+                        "required": true
+                    },
+                    {
+                        "name": "inputMethod",
+                        "type": "select",
+                        "label": "Body input method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "dataStructure",
+                                "jsonString"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "jsonStringBodyContent",
+                        "type": "text",
+                        "label": "Body content",
+                        "required": true
+                    },
+                    {
+                        "name": "paginationType",
+                        "type": "select",
+                        "label": "Pagination type",
+                        "validate": {
+                            "enum": [
+                                "offsetBased",
+                                "pageBased",
+                                "urlBased",
+                                "tokenBased"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "data",
+                        "type": "any",
+                        "label": "Data"
+                    },
+                    {
+                        "name": "statusCode",
+                        "type": "number",
+                        "label": "Status Code"
+                    },
+                    {
+                        "name": "headers",
+                        "spec": [
+                            {
+                                "name": "content-length",
+                                "type": "text",
+                                "label": "Content-Length"
+                            },
+                            {
+                                "name": "content-encoding",
+                                "type": "text",
+                                "label": "Content-Encoding"
+                            },
+                            {
+                                "name": "content-type",
+                                "type": "text",
+                                "label": "Content-Type"
+                            },
+                            {
+                                "name": "server",
+                                "type": "text",
+                                "label": "Server"
+                            },
+                            {
+                                "name": "cache-control",
+                                "type": "text",
+                                "label": "Cache-Control"
+                            },
+                            {
+                                "name": "set-cookie",
+                                "spec": {
+                                    "type": "text"
+                                },
+                                "type": "array",
+                                "label": "Set-Cookie"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Headers"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 10,
+            "module": "json:ParseJSON",
+            "version": 1,
+            "parameters": {
+                "type": 632226
+            },
+            "mapper": {
+                "json": "{{replace(6.data.choices[].message.content; \"/^[^{]*(\\{[\\s\\S]*\\})[^}]*$/g\"; \"$1\")}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1536,
+                    "y": 5
+                },
+                "restore": {
+                    "parameters": {
+                        "type": {
+                            "label": "My data structure"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "type",
+                        "type": "udt",
+                        "label": "Data structure"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "json",
+                        "type": "text",
+                        "label": "JSON string",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "help": "",
+                        "name": "$schema",
+                        "type": "text",
+                        "label": "$schema"
+                    },
+                    {
+                        "help": "",
+                        "name": "title",
+                        "type": "text",
+                        "label": "Title"
+                    },
+                    {
+                        "help": "",
+                        "name": "type",
+                        "type": "text",
+                        "label": "Type"
+                    },
+                    {
+                        "help": "",
+                        "name": "additionalProperties",
+                        "type": "boolean",
+                        "label": "Additional properties"
+                    },
+                    {
+                        "help": "",
+                        "name": "required",
+                        "spec": {
+                            "type": "text"
+                        },
+                        "type": "array",
+                        "label": "Required"
+                    },
+                    {
+                        "help": "",
+                        "name": "properties",
+                        "spec": [
+                            {
+                                "name": "schema_version",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Schema version"
+                            },
+                            {
+                                "name": "release_id",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Release ID"
+                            },
+                            {
+                                "name": "song",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Song"
+                            },
+                            {
+                                "name": "strategy",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    },
+                                    {
+                                        "name": "enum",
+                                        "spec": {
+                                            "type": "text"
+                                        },
+                                        "type": "array",
+                                        "label": "Enum"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Strategy"
+                            },
+                            {
+                                "name": "release_day",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Release day"
+                            },
+                            {
+                                "name": "spotify_url",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "spec": {
+                                            "type": "text"
+                                        },
+                                        "type": "array",
+                                        "label": "Type"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Spotify URL"
+                            },
+                            {
+                                "name": "clips",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    },
+                                    {
+                                        "name": "minItems",
+                                        "type": "number",
+                                        "label": "Min items"
+                                    },
+                                    {
+                                        "name": "items",
+                                        "spec": [
+                                            {
+                                                "name": "type",
+                                                "type": "text",
+                                                "label": "Type"
+                                            },
+                                            {
+                                                "name": "additionalProperties",
+                                                "type": "boolean",
+                                                "label": "Additional properties"
+                                            },
+                                            {
+                                                "name": "required",
+                                                "spec": {
+                                                    "type": "text"
+                                                },
+                                                "type": "array",
+                                                "label": "Required"
+                                            },
+                                            {
+                                                "name": "properties",
+                                                "spec": [
+                                                    {
+                                                        "name": "id",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "ID"
+                                                    },
+                                                    {
+                                                        "name": "start",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            },
+                                                            {
+                                                                "name": "minimum",
+                                                                "type": "number",
+                                                                "label": "Minimum"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Start"
+                                                    },
+                                                    {
+                                                        "name": "end",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            },
+                                                            {
+                                                                "name": "exclusiveMinimum",
+                                                                "type": "number",
+                                                                "label": "Exclusive minimum"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "End"
+                                                    },
+                                                    {
+                                                        "name": "platforms",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            },
+                                                            {
+                                                                "name": "items",
+                                                                "spec": [
+                                                                    {
+                                                                        "name": "type",
+                                                                        "type": "text",
+                                                                        "label": "Type"
+                                                                    },
+                                                                    {
+                                                                        "name": "enum",
+                                                                        "spec": {
+                                                                            "type": "text"
+                                                                        },
+                                                                        "type": "array",
+                                                                        "label": "Enum"
+                                                                    }
+                                                                ],
+                                                                "type": "collection",
+                                                                "label": "Items"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Platforms"
+                                                    },
+                                                    {
+                                                        "name": "purpose",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Purpose"
+                                                    },
+                                                    {
+                                                        "name": "format",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            },
+                                                            {
+                                                                "name": "enum",
+                                                                "spec": {
+                                                                    "type": "text"
+                                                                },
+                                                                "type": "array",
+                                                                "label": "Enum"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Format"
+                                                    },
+                                                    {
+                                                        "name": "resolution",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            },
+                                                            {
+                                                                "name": "enum",
+                                                                "spec": {
+                                                                    "type": "text"
+                                                                },
+                                                                "type": "array",
+                                                                "label": "Enum"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Resolution"
+                                                    },
+                                                    {
+                                                        "name": "hook",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Hook"
+                                                    }
+                                                ],
+                                                "type": "collection",
+                                                "label": "Properties"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Items"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Clips"
+                            },
+                            {
+                                "name": "posts",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    },
+                                    {
+                                        "name": "items",
+                                        "spec": [
+                                            {
+                                                "name": "type",
+                                                "type": "text",
+                                                "label": "Type"
+                                            },
+                                            {
+                                                "name": "additionalProperties",
+                                                "type": "boolean",
+                                                "label": "Additional properties"
+                                            },
+                                            {
+                                                "name": "required",
+                                                "spec": {
+                                                    "type": "text"
+                                                },
+                                                "type": "array",
+                                                "label": "Required"
+                                            },
+                                            {
+                                                "name": "properties",
+                                                "spec": [
+                                                    {
+                                                        "name": "id",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "ID"
+                                                    },
+                                                    {
+                                                        "name": "platform",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            },
+                                                            {
+                                                                "name": "enum",
+                                                                "spec": {
+                                                                    "type": "text"
+                                                                },
+                                                                "type": "array",
+                                                                "label": "Enum"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Platform"
+                                                    },
+                                                    {
+                                                        "name": "type",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Type"
+                                                    },
+                                                    {
+                                                        "name": "publish_at",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Publish at"
+                                                    },
+                                                    {
+                                                        "name": "clip_id",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "spec": {
+                                                                    "type": "text"
+                                                                },
+                                                                "type": "array",
+                                                                "label": "Type"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Clip ID"
+                                                    },
+                                                    {
+                                                        "name": "caption",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Caption"
+                                                    },
+                                                    {
+                                                        "name": "cta",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Cta"
+                                                    },
+                                                    {
+                                                        "name": "hashtags",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            },
+                                                            {
+                                                                "name": "items",
+                                                                "spec": [
+                                                                    {
+                                                                        "name": "type",
+                                                                        "type": "text",
+                                                                        "label": "Type"
+                                                                    }
+                                                                ],
+                                                                "type": "collection",
+                                                                "label": "Items"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Hashtags"
+                                                    },
+                                                    {
+                                                        "name": "title",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "spec": {
+                                                                    "type": "text"
+                                                                },
+                                                                "type": "array",
+                                                                "label": "Type"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Title"
+                                                    },
+                                                    {
+                                                        "name": "tiktok_mode",
+                                                        "spec": [
+                                                            {
+                                                                "name": "type",
+                                                                "spec": {
+                                                                    "type": "text"
+                                                                },
+                                                                "type": "array",
+                                                                "label": "Type"
+                                                            },
+                                                            {
+                                                                "name": "enum",
+                                                                "spec": {
+                                                                    "type": "text"
+                                                                },
+                                                                "type": "array",
+                                                                "label": "Enum"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Tiktok mode"
+                                                    }
+                                                ],
+                                                "type": "collection",
+                                                "label": "Properties"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Items"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Posts"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Properties"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 7,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "authenticationType": "noAuth",
+                "tlsType": ""
+            },
+            "mapper": {
+                "url": "https://stork-command-queue.onrender.com/v1/jobs",
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "Authorization",
+                        "value": "Bearer hheesslloo3206"
+                    }
+                ],
+                "contentType": "json",
+                "parseResponse": true,
+                "stopOnHttpError": true,
+                "timeout": "300",
+                "allowRedirects": true,
+                "shareCookies": false,
+                "requestCompressedContent": true,
+                "inputMethod": "jsonString",
+                "jsonStringBodyContent": "{\n  \"job_id\": \"{{1.id}}\",\n  \"type\": \"video_processing\",\n  \"release_id\": \"{{replace(1.name; \".mp4\"; \"\")}}\",\n  \"source\": \"{{1.name}}\",\n  \"source_url\": \"{{1.webContentLink}}\",\n  \"release_plan\": {{replace(6.data.choices[].message.content; \"/^[^{]*(\\{[\\s\\S]*\\})[^}]*$/g\"; \"$1\")}}\n}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1908,
+                    "y": -10
+                },
+                "setupValidation": {
+                    "version": 1,
+                    "configuration": "9f801ef16b3bc71",
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    }
+                },
+                "restore": {
+                    "parameters": {
+                        "authenticationType": {
+                            "label": "No authenticationUse when no credentials are required for the request."
+                        },
+                        "tlsType": {
+                            "label": "Empty"
+                        }
+                    },
+                    "expect": {
+                        "method": {
+                            "mode": "chose",
+                            "label": "POST"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null
+                            ]
+                        },
+                        "queryParameters": {
+                            "mode": "chose"
+                        },
+                        "contentType": {
+                            "label": "application/jsonEnter data in the JSON format, as a string or using a data structure."
+                        },
+                        "parseResponse": {
+                            "mode": "chose"
+                        },
+                        "stopOnHttpError": {
+                            "mode": "chose"
+                        },
+                        "allowRedirects": {
+                            "mode": "chose"
+                        },
+                        "shareCookies": {
+                            "mode": "chose"
+                        },
+                        "requestCompressedContent": {
+                            "mode": "chose"
+                        },
+                        "inputMethod": {
+                            "label": "JSON stringEnter the JSON body as a raw text string. If values contain JSON reserved characters, you must escape them manually."
+                        },
+                        "paginationType": {
+                            "label": "Empty"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "authenticationType",
+                        "type": "select",
+                        "label": "Authentication type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "noAuth",
+                                "apiKey",
+                                "basicAuth",
+                                "oAuth"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tlsType",
+                        "type": "select",
+                        "label": "Transport layer security (TLS)",
+                        "validate": {
+                            "enum": [
+                                "mTls",
+                                "tls"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "proxyKeychain",
+                        "type": "keychain:proxy",
+                        "label": "Proxy"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "url",
+                        "type": "url",
+                        "label": "URL",
+                        "required": true
+                    },
+                    {
+                        "name": "method",
+                        "type": "select",
+                        "label": "Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "get",
+                                "head",
+                                "post",
+                                "put",
+                                "patch",
+                                "delete",
+                                "options"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "headers",
+                        "type": "array",
+                        "label": "Headers",
+                        "spec": {
+                            "name": "value",
+                            "label": "Header",
+                            "type": "collection",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "label": "Name",
+                                    "type": "text",
+                                    "required": true,
+                                    "validate": {
+                                        "pattern": "^[-!#$%&'*+.^_`|~0-9A-Za-z]+$"
+                                    }
+                                },
+                                {
+                                    "name": "value",
+                                    "label": "Value",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "queryParameters",
+                        "type": "array",
+                        "label": "Query parameters",
+                        "spec": {
+                            "name": "value",
+                            "label": "Parameter",
+                            "type": "collection",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "label": "Name",
+                                    "type": "text",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "label": "Value",
+                                    "type": "text"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "contentType",
+                        "type": "select",
+                        "label": "Body content type",
+                        "validate": {
+                            "enum": [
+                                "json",
+                                "multipart",
+                                "urlEncoded",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "parseResponse",
+                        "type": "boolean",
+                        "label": "Parse response",
+                        "required": true
+                    },
+                    {
+                        "name": "stopOnHttpError",
+                        "type": "boolean",
+                        "label": "Return error if HTTP request fails",
+                        "required": true
+                    },
+                    {
+                        "name": "timeout",
+                        "type": "uinteger",
+                        "label": "Timeout",
+                        "validate": {
+                            "min": 1,
+                            "max": 300
+                        }
+                    },
+                    {
+                        "name": "allowRedirects",
+                        "type": "boolean",
+                        "label": "Allow redirects",
+                        "required": true
+                    },
+                    {
+                        "name": "shareCookies",
+                        "type": "boolean",
+                        "label": "Share cookies with other HTTP modules",
+                        "required": true
+                    },
+                    {
+                        "name": "requestCompressedContent",
+                        "type": "boolean",
+                        "label": "Request compressed content",
+                        "required": true
+                    },
+                    {
+                        "name": "inputMethod",
+                        "type": "select",
+                        "label": "Body input method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "dataStructure",
+                                "jsonString"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "jsonStringBodyContent",
+                        "type": "text",
+                        "label": "Body content",
+                        "required": true
+                    },
+                    {
+                        "name": "paginationType",
+                        "type": "select",
+                        "label": "Pagination type",
+                        "validate": {
+                            "enum": [
+                                "offsetBased",
+                                "pageBased",
+                                "urlBased",
+                                "tokenBased"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "data",
+                        "label": "Data",
+                        "type": "any"
+                    },
+                    {
+                        "name": "statusCode",
+                        "label": "Status Code",
+                        "type": "number"
+                    },
+                    {
+                        "name": "headers",
+                        "label": "Headers",
+                        "type": "collection",
+                        "spec": [
+                            {
+                                "name": "content-length",
+                                "label": "Content-Length",
+                                "type": "text"
+                            },
+                            {
+                                "name": "content-encoding",
+                                "label": "Content-Encoding",
+                                "type": "text"
+                            },
+                            {
+                                "name": "content-type",
+                                "label": "Content-Type",
+                                "type": "text"
+                            },
+                            {
+                                "name": "server",
+                                "label": "Server",
+                                "type": "text"
+                            },
+                            {
+                                "name": "cache-control",
+                                "label": "Cache-Control",
+                                "type": "text"
+                            },
+                            {
+                                "name": "set-cookie",
+                                "label": "Set-Cookie",
+                                "type": "array",
+                                "spec": {
+                                    "type": "text"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu2.make.com",
+        "notes": []
+    }
+}
